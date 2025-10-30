@@ -188,20 +188,6 @@ npm run build
 npm run preview
 ```
 
-## Future Enhancements
-
-- Payment gateway integration
-- Email notifications for bookings
-- Event reminders
-- Mobile app (React Native)
-- Advanced analytics dashboard
-- Kubernetes deployment
-- CI/CD with Jenkins and Docker
-
 ## License
 
 MIT
-
-## Contributors
-
-DevOps CA Project Team
