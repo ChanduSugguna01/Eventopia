@@ -30,7 +30,7 @@ A full-stack MERN application for managing events and booking tickets with QR co
 ## Project Structure
 
 ```
-devops_ca/
+Eventopia/
 ├── backend/
 │   ├── models/           # Mongoose models (User, Event, Booking)
 │   ├── routes/           # API routes (auth, events, bookings, qrcode)
@@ -59,7 +59,7 @@ devops_ca/
 ### 1. Clone the repository
 
 ```bash
-cd d:\devops_ca
+cd c:\Eventopia
 ```
 
 ### 2. Setup Backend
