@@ -5,51 +5,60 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    image: chandusugguna/eventopia-backend:latest
     container_name: eventopia-backend
     restart: unless-stopped
     ports:
       - "5000:5000"
-    env_file:
-      - ./backend/.env
     environment:
-      NODE_ENV: production
-      PORT: 5000
-      CLIENT_URL: http://localhost:3000
-      
+      - NODE_ENV=production
+      - PORT=5000
+      - MONGODB_URI=${MONGODB_URI}
+      - JWT_SECRET=${JWT_SECRET}
+      - SESSION_SECRET=${SESSION_SECRET}
+      - CLIENT_URL=http://localhost:3000
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
+      - GOOGLE_CALLBACK_URL=http://localhost:5000/api/auth/google/callback
     volumes:
       - ./backend/logs:/app/logs
     networks:
       - eventopia-network
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:5000/api/health"]
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:5000/api/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 5s
+      start_period: 40s
 
   # Frontend Web Application
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    image: chandusugguna/eventopia-frontend:latest
     container_name: eventopia-frontend
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "3000:80"
     environment:
-      VITE_API_BASE_URL: http://localhost:5000/api
-      VITE_APP_NAME: Eventopia
+      - VITE_API_BASE_URL=http://localhost:5000/api
+      - VITE_APP_NAME=Eventopia
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     networks:
       - eventopia-network
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 5s
+      start_period: 40s
 
 networks:
   eventopia-network:
     driver: bridge
+
+volumes:
+  backend-logs:
