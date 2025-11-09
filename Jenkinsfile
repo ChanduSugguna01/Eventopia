@@ -21,7 +21,6 @@ pipeline {
         
         // Build info
         BUILD_VERSION = "${env.BUILD_NUMBER}"
-        GIT_COMMIT_SHORT = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
     }
     
     stages {
@@ -29,7 +28,9 @@ pipeline {
             steps {
                 echo '📦 Checking out code from repository...'
                 checkout scm
-                sh 'git rev-parse --short HEAD > .git/commit-id'
+                script {
+                    env.GIT_COMMIT_SHORT = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
+                }
             }
         }
         
@@ -248,7 +249,9 @@ VITE_APP_NAME=Eventopia
     post {
         always {
             echo '🧹 Cleaning up...'
-            sh 'docker system prune -f || true'
+            script {
+                sh 'docker system prune -f || true'
+            }
             cleanWs()
         }
         
@@ -262,7 +265,7 @@ VITE_APP_NAME=Eventopia
                         <p>Build completed successfully!</p>
                         <p><strong>Job:</strong> ${env.JOB_NAME}</p>
                         <p><strong>Build Number:</strong> ${env.BUILD_NUMBER}</p>
-                        <p><strong>Git Commit:</strong> ${GIT_COMMIT_SHORT}</p>
+                        <p><strong>Git Commit:</strong> ${env.GIT_COMMIT_SHORT}</p>
                         <p><strong>Build URL:</strong> <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
                     """,
                     to: 'chandusugguna@gmail.com',
@@ -281,7 +284,7 @@ VITE_APP_NAME=Eventopia
                         <p>Build failed!</p>
                         <p><strong>Job:</strong> ${env.JOB_NAME}</p>
                         <p><strong>Build Number:</strong> ${env.BUILD_NUMBER}</p>
-                        <p><strong>Git Commit:</strong> ${GIT_COMMIT_SHORT}</p>
+                        <p><strong>Git Commit:</strong> ${env.GIT_COMMIT_SHORT ?: 'Unknown'}</p>
                         <p><strong>Build URL:</strong> <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
                         <p><strong>Console Output:</strong> <a href="${env.BUILD_URL}/console">${env.BUILD_URL}/console</a></p>
                     """,
