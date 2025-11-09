@@ -103,7 +103,7 @@ VITE_APP_NAME=Eventopia"""
                     steps {
                         dir('backend') {
                             echo '🧪 Running backend tests...'
-                            bat 'npm test || exit 0'
+                            bat 'npm test -- --forceExit --detectOpenHandles || exit 0'
                         }
                     }
                 }
@@ -111,7 +111,7 @@ VITE_APP_NAME=Eventopia"""
                     steps {
                         dir('frontend') {
                             echo '🧪 Running frontend tests...'
-                            bat 'npm test || exit 0'
+                            bat 'npm test -- --forceExit --detectOpenHandles || exit 0'
                         }
                     }
                 }
